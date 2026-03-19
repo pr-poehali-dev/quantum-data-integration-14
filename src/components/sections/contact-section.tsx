@@ -3,31 +3,41 @@ import { useReveal } from "@/hooks/use-reveal"
 import { useState, type FormEvent } from "react"
 import { MagneticButton } from "@/components/magnetic-button"
 
+const ORDER_URL = "https://functions.poehali.dev/d26130a6-979a-4ec9-8fc9-919173758ab0"
+
 export function ContactSection() {
   const { ref, isVisible } = useReveal(0.3)
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" })
+  const [formData, setFormData] = useState({ name: "", email: "", address: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [error, setError] = useState("")
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    // Basic validation
-    if (!formData.name || !formData.email || !formData.message) {
-      return
-    }
+    if (!formData.name || !formData.email || !formData.address) return
 
     setIsSubmitting(true)
+    setError("")
 
-    // Simulate form submission (replace with actual API call later)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    try {
+      const res = await fetch(ORDER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
 
-    setIsSubmitting(false)
-    setSubmitSuccess(true)
-    setFormData({ name: "", email: "", message: "" })
-
-    // Reset success message after 5 seconds
-    setTimeout(() => setSubmitSuccess(false), 5000)
+      if (res.ok) {
+        setSubmitSuccess(true)
+        setFormData({ name: "", email: "", address: "" })
+        setTimeout(() => setSubmitSuccess(false), 7000)
+      } else {
+        setError("Ошибка отправки. Попробуйте ещё раз.")
+      }
+    } catch {
+      setError("Нет соединения. Проверьте интернет и попробуйте снова.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -97,7 +107,6 @@ export function ContactSection() {
             </div>
           </div>
 
-          {/* Right side - Minimal form */}
           <div className="flex flex-col justify-center">
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
               <div
@@ -143,8 +152,8 @@ export function ContactSection() {
                 <label className="mb-1 block font-mono text-xs text-foreground/60 md:mb-2">Адрес доставки</label>
                 <textarea
                   rows={3}
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   required
                   className="w-full border-b border-foreground/30 bg-transparent py-1.5 text-sm text-foreground placeholder:text-foreground/40 focus:border-foreground/50 focus:outline-none md:py-2 md:text-base"
                   placeholder="Город, улица, дом, квартира..."
@@ -165,7 +174,12 @@ export function ContactSection() {
                   {isSubmitting ? "Оформляем..." : "Оформить заказ — 890 ₽"}
                 </MagneticButton>
                 {submitSuccess && (
-                  <p className="mt-3 text-center font-mono text-sm text-foreground/80">Заказ принят! Свяжемся с вами в течение часа.</p>
+                  <p className="mt-3 text-center font-mono text-sm text-green-300">
+                    ✓ Заказ принят! Напишем вам в течение часа.
+                  </p>
+                )}
+                {error && (
+                  <p className="mt-3 text-center font-mono text-sm text-red-400">{error}</p>
                 )}
               </div>
             </form>
