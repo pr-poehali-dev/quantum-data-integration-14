@@ -9,86 +9,82 @@ export function WorkSection() {
       className="flex h-screen w-screen shrink-0 snap-start items-center px-6 pt-20 md:px-12 md:pt-0 lg:px-16"
     >
       <div className="mx-auto w-full max-w-7xl">
-        <div
-          className={`mb-12 transition-all duration-700 md:mb-16 ${
-            isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"
-          }`}
-        >
-          <h2 className="mb-2 font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl lg:text-7xl">
-            Проекты
-          </h2>
-          <p className="font-mono text-sm text-foreground/60 md:text-base">/ Избранные работы</p>
-        </div>
+        <div className="grid gap-12 md:grid-cols-2 md:gap-16 lg:gap-24">
+          {/* Left — book cover */}
+          <div
+            className={`flex items-center justify-center transition-all duration-700 ${
+              isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"
+            }`}
+          >
+            <div className="relative">
+              <img
+                src="https://cdn.poehali.dev/projects/83359ff7-b27c-43ae-adc6-670d9b4a97d9/files/8cfe7abc-abc3-46f7-b365-bbddfa5709c0.jpg"
+                alt="Алиса в стране чудес — обложка"
+                className="h-auto w-full max-w-xs rounded-lg shadow-2xl shadow-purple-900/50 md:max-w-sm"
+              />
+              <div className="absolute -bottom-4 -right-4 rounded-lg border border-foreground/20 bg-foreground/10 px-4 py-2 backdrop-blur-md">
+                <p className="font-mono text-xs text-foreground/80">Подарочное издание</p>
+                <p className="font-sans text-lg font-light text-foreground">890 ₽</p>
+              </div>
+            </div>
+          </div>
 
-        <div className="space-y-6 md:space-y-8">
-          {[
-            {
-              number: "01",
-              title: "ТехноСтарт",
-              category: "Корпоративный портал",
-              year: "2024",
-              direction: "left",
-            },
-            {
-              number: "02",
-              title: "АльфаТрейд",
-              category: "Финтех платформа",
-              year: "2024",
-              direction: "right",
-            },
-            {
-              number: "03",
-              title: "МедиаПульс",
-              category: "Медиа сервис",
-              year: "2023",
-              direction: "left",
-            },
-          ].map((project, i) => (
-            <ProjectCard key={i} project={project} index={i} isVisible={isVisible} />
-          ))}
+          {/* Right — about the book */}
+          <div className="flex flex-col justify-center">
+            <div
+              className={`mb-8 transition-all duration-700 ${
+                isVisible ? "translate-x-0 opacity-100" : "translate-x-12 opacity-0"
+              }`}
+            >
+              <h2 className="mb-2 font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl lg:text-7xl">
+                О книге
+              </h2>
+              <p className="font-mono text-sm text-foreground/60 md:text-base">/ Льюис Кэрролл, 1865</p>
+            </div>
+
+            <div className="space-y-6">
+              {[
+                {
+                  number: "01",
+                  title: "Классика на все времена",
+                  description: "Одна из самых читаемых книг в мире — переведена на 174 языка и не выходит из печати 160 лет.",
+                  direction: "right",
+                },
+                {
+                  number: "02",
+                  title: "12 захватывающих глав",
+                  description: "От падения в кроличью нору до суда Червонной Королевы — каждая глава полна приключений и юмора.",
+                  direction: "left",
+                },
+                {
+                  number: "03",
+                  title: "Иллюстрации Тенниела",
+                  description: "Оригинальные гравюры сэра Джона Тенниела, ставшие символом эпохи викторианской фантастики.",
+                  direction: "right",
+                },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className={`group flex items-start gap-4 border-l border-foreground/20 pl-4 transition-all duration-700 hover:border-foreground/40 md:pl-6 ${
+                    isVisible
+                      ? "translate-x-0 opacity-100"
+                      : item.direction === "left"
+                        ? "-translate-x-12 opacity-0"
+                        : "translate-x-12 opacity-0"
+                  }`}
+                  style={{ transitionDelay: `${200 + i * 150}ms` }}
+                >
+                  <span className="font-mono text-xs text-foreground/30 mt-1">{item.number}</span>
+                  <div>
+                    <h3 className="mb-1 font-sans text-lg font-light text-foreground md:text-xl">{item.title}</h3>
+                    <p className="text-sm leading-relaxed text-foreground/70">{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  )
-}
-
-function ProjectCard({
-  project,
-  index,
-  isVisible,
-}: {
-  project: { number: string; title: string; category: string; year: string; direction: string }
-  index: number
-  isVisible: boolean
-}) {
-  const getRevealClass = () => {
-    if (!isVisible) {
-      return project.direction === "left" ? "-translate-x-16 opacity-0" : "translate-x-16 opacity-0"
-    }
-    return "translate-x-0 opacity-100"
-  }
-
-  return (
-    <div
-      className={`group flex items-center justify-between border-b border-foreground/10 py-6 transition-all duration-700 hover:border-foreground/20 md:py-8 ${getRevealClass()}`}
-      style={{
-        transitionDelay: `${index * 150}ms`,
-        marginLeft: index % 2 === 0 ? "0" : "auto",
-        maxWidth: index % 2 === 0 ? "85%" : "90%",
-      }}
-    >
-      <div className="flex items-baseline gap-4 md:gap-8">
-        <span className="font-mono text-sm text-foreground/30 transition-colors group-hover:text-foreground/50 md:text-base">
-          {project.number}
-        </span>
-        <div>
-          <h3 className="mb-1 font-sans text-2xl font-light text-foreground transition-transform duration-300 group-hover:translate-x-2 md:text-3xl lg:text-4xl">
-            {project.title}
-          </h3>
-          <p className="font-mono text-xs text-foreground/50 md:text-sm">{project.category}</p>
-        </div>
-      </div>
-      <span className="font-mono text-xs text-foreground/30 md:text-sm">{project.year}</span>
-    </div>
   )
 }
